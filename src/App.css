@@ -1,0 +1,11 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+  display: flex;
+  background-color: pink;
+  justify-content: space-around;
+  align-items: center;
+}
