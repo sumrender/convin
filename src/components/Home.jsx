@@ -1,12 +1,18 @@
 import { useUserContext } from "../context/UserContext";
+import Auth from "./Auth";
+import Navbar from "./Navbar";
 
-export default function Home() {
-  const {user, handleSignOut} = useUserContext();
-  return <>
-    <div className="navbar">
-      <h1>Convin</h1>
-      <p>{user.displayName}</p>
-      <button onClick={handleSignOut}>sign out</button>
-    </div>
-  </>;
+export default function App() {
+  const { error, loading, user } = useUserContext();
+  return (
+    <>
+      <Navbar />
+      {error && (
+        <div className="error">
+          <p>error</p>
+        </div>
+      )}
+      {loading ? <p>Loading</p> : user ? <>Home</> : <Auth />}
+    </>
+  );
 }
