@@ -15,11 +15,13 @@ export default function Home() {
         <p>Loading</p>
       ) : user ? (
         <>
-          <h1>LOGGED IN</h1>
+          <h1 style={{ textAlign: "center", paddingTop: "10px" }}>
+            View your Cards
+          </h1>
           <Bucket />
         </>
       ) : (
-        <div className="unauthorized">
+        <div className="unauthorized" style={{ height: "80vh" }}>
           <p>Sign in using google to access our cool features</p>
         </div>
       )}

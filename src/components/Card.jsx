@@ -1,12 +1,26 @@
 import "./Card.css";
-export default function Card({ item }) {
+import { AiFillEdit } from "react-icons/ai";
+import { CgFolderRemove } from "react-icons/cg";
+import { useNavigate } from "react-router-dom";
+export default function Card({ item, deleteItem }) {
+  const navigate = useNavigate();
+
+  function handleEdit() {
+    navigate("/Update_Card/" + item.id);
+  }
+
   return (
-    <div class="card">
-      <button class="dismiss" type="button">
+    <div className="card">
+      <button
+        className="dismiss"
+        style={{ backgroundColor: "red", color: "white" }}
+        type="button"
+        onClick={() => deleteItem(item.id)}
+      >
         ×
       </button>
-      <div class="header">
-        <div class="image">
+      <div className="header">
+        <div className="image">
           <iframe
             id="video"
             width="420"
@@ -16,19 +30,23 @@ export default function Card({ item }) {
             allowFullScreen
           ></iframe>
         </div>
-        <div class="content">
-          <span class="title">{item.name}</span>
-        </div>
-        <div class="actions">
-          <button class="track btn-edit" type="button">
-            Edit
-          </button>
-          <button class="track btn-delete" type="button">
-            Delete
-          </button>
-          <button class="track btn-move" type="button">
-            Move
-          </button>
+        <div
+          className="actions"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <span className="title">{item.name}</span>
+          {/* <div className="card-btns">
+            <button className="card-btn" type="button" onClick={handleEdit}>
+              <AiFillEdit />
+            </button>
+            <button className="card-btn" type="button">
+              <CgFolderRemove />
+            </button>
+          </div> */}
         </div>
       </div>
     </div>

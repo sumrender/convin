@@ -7,12 +7,14 @@ export default function Buck() {
   const [items, setItems] = useState([]);
   const [bucketNameForm, setBucketNameForm] = useState("");
   const {
+    user,
     allItems,
     buckets,
     setBuckets,
     postBucket,
     activeBucket,
     setActiveBucket,
+    deleteDocWithID,
   } = useRootContext();
 
   let navigate = useNavigate();
@@ -26,19 +28,13 @@ export default function Buck() {
     setItems(newItem);
   }, [activeBucket, allItems]);
 
-  const bucketData = (e) => {
-    e.preventDefault();
-    let val = e.target;
-    console.log(val);
-    console.log("bucket name");
-  };
   const createBucket = async (e) => {
     e.preventDefault();
     const newBucketName = bucketNameForm;
     console.log(buckets);
     try {
       await postBucket(newBucketName);
-      setBuckets([...buckets, newBucketName]);
+      setBuckets([...buckets, { name: newBucketName, uid: user.uid }]);
       // navigate("/");
     } catch (error) {
       console.log(error);
@@ -46,10 +42,27 @@ export default function Buck() {
 
     console.log("new bucket created");
   };
-  const deleteBucket = (e) => {
-    e.preventDefault();
-    //remove this bucket
-    console.log("Delete bucket");
+
+  const deleteBucket = async (bucketId) => {
+    const newList = buckets.filter((bucket) => bucket.id !== bucketId);
+    setBuckets(newList);
+
+    try {
+      await deleteDocWithID("buckets", bucketId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteItem = async (itemId) => {
+    const newList = items.filter((item) => item.id !== itemId);
+    setItems(newList);
+
+    try {
+      await deleteDocWithID("cards", itemId);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleBucketNameFormChange = (e) => {
@@ -62,7 +75,7 @@ export default function Buck() {
         <div className="search-bucket">
           <input
             type="search"
-            placeholder="Search"
+            placeholder="Create playlist"
             value={bucketNameForm}
             onChange={handleBucketNameFormChange}
           ></input>
@@ -74,14 +87,21 @@ export default function Buck() {
             Create
           </button>
         </div>
-        {buckets.map((bucketName) => {
+        {buckets.map((bucket) => {
           return (
             <div
-              onClick={() => setActiveBucket(bucketName)}
+              onClick={() => setActiveBucket(bucket.name)}
               className="bucket-item"
-              key={bucketName}
+              key={bucket.id}
             >
-              {bucketName}
+              <p style={{ cursor: "pointer" }}>{bucket.name}</p>
+              <button
+                type="button"
+                className="delete-button"
+                onClick={() => deleteBucket(bucket.id)}
+              >
+                ×
+              </button>
             </div>
           );
         })}
@@ -90,15 +110,23 @@ export default function Buck() {
         {activeBucket && (
           <button
             type="button"
+            className="add-new-video btn btn-primary me-3"
             onClick={routeChange}
-            className="btn btn-primary me-3"
           >
-            Create
+            Add new video
           </button>
         )}
-        {items.map((item) => {
-          return <Card item={item} key={item.id} />;
-        })}
+        {items.length > 0 ? (
+          <div className="item-container">
+            {items.map((item) => {
+              return <Card item={item} key={item.id} deleteItem={deleteItem} />;
+            })}
+          </div>
+        ) : (
+          <div className="empty-items">
+            <h3>Select or Create a card to get started</h3>
+          </div>
+        )}
       </div>
     </div>
   );

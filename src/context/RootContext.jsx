@@ -7,6 +7,9 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -15,7 +18,6 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { itemsData, searchBucket } from "../data";
 
 const firebaseConfig = {
   apiKey: "AIzaSyApIO6e_gIEzIKgUMhKcbbNXEbSercIlME",
@@ -45,13 +47,14 @@ export default function RootContextProvider({ children }) {
 
   console.log("user", user);
   console.log("allItems", allItems);
+  console.log("buckets", buckets);
 
   useEffect(() => {
     setLoading(true);
     onAuthStateChanged(auth, (userData) => {
       if (userData) {
         setUser(userData);
-        setBuckets(searchBucket);
+        getAllBuckets(userData);
         getAllItems(userData);
       }
       setLoading(false);
@@ -96,7 +99,7 @@ export default function RootContextProvider({ children }) {
   async function postBucket(bucket) {
     try {
       const docRef = await addDoc(collection(db, "buckets"), {
-        ...bucket,
+        name: bucket,
         uid: user.uid,
       });
       console.log("Document written with ID: ", docRef.id);
@@ -120,6 +123,30 @@ export default function RootContextProvider({ children }) {
     setAllItems(tempItems);
   }
 
+  async function getItemWithId(itemId) {
+    try {
+      const docRef = doc(db, "cards", itemId);
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap);
+
+      if (!docSnap.exists()) {
+        console.log("No such document!");
+      }
+      return docSnap.data();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function updateItemWitId(itemId, item) {
+    try {
+      const docRef = doc(db, "cards", itemId);
+      await updateDoc(docRef, item);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function getAllBuckets(userData) {
     if (!userData) {
       console.log("user not defined in get all items");
@@ -131,11 +158,20 @@ export default function RootContextProvider({ children }) {
     );
 
     const querySnapshot = await getDocs(q);
-    let tempItems = [];
+    let tempBuckets = [];
     querySnapshot.forEach((doc) => {
-      tempItems.push({ id: doc.id, ...doc.data() });
+      tempBuckets.push({ id: doc.id, ...doc.data() });
     });
-    setAllItems(tempItems);
+    setBuckets(tempBuckets);
+  }
+
+  async function deleteDocWithID(collection, itemId) {
+    try {
+      await deleteDoc(doc(db, collection, itemId));
+      console.log(`${collection} obj with id: ${itemId} deleted`);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const value = {
@@ -152,6 +188,9 @@ export default function RootContextProvider({ children }) {
     setActiveBucket,
     postItem,
     postBucket,
+    deleteDocWithID,
+    getItemWithId,
+    updateItemWitId,
   };
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 }
