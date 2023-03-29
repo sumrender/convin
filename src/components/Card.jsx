@@ -1,18 +1,6 @@
 function Card() {
   return (
-    // <div>
     <div class="card">
-      {/* <img
-        class="card-img-top "
-        src="https://mdbootstrap.com/img/Photos/Others/images/43.webp"
-        alt="Card image cap"
-      /> */}
-      {/* <input type="url"></input> */}
-      {/* <a id="play-video" href="#">
-        Play Video
-      </a>
-      <br /> */}
-
       <iframe
         id="video"
         width="420"
@@ -40,7 +28,6 @@ function Card() {
         </a>
       </div>
     </div>
-    // </div>
   );
 }
 
