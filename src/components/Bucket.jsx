@@ -5,7 +5,15 @@ import Card from "./Card";
 
 export default function Buck() {
   const [items, setItems] = useState([]);
-  const { allItems, buckets, activeBucket, setActiveBucket } = useRootContext();
+  const [bucketNameForm, setBucketNameForm] = useState("");
+  const {
+    allItems,
+    buckets,
+    setBuckets,
+    postBucket,
+    activeBucket,
+    setActiveBucket,
+  } = useRootContext();
 
   let navigate = useNavigate();
   const routeChange = () => {
@@ -24,9 +32,18 @@ export default function Buck() {
     console.log(val);
     console.log("bucket name");
   };
-  const createBucket = (e) => {
+  const createBucket = async (e) => {
     e.preventDefault();
-    //remove this bucket
+    const newBucketName = bucketNameForm;
+    console.log(buckets);
+    try {
+      await postBucket(newBucketName);
+      setBuckets([...buckets, newBucketName]);
+      // navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+
     console.log("new bucket created");
   };
   const deleteBucket = (e) => {
@@ -34,11 +51,21 @@ export default function Buck() {
     //remove this bucket
     console.log("Delete bucket");
   };
+
+  const handleBucketNameFormChange = (e) => {
+    const data = e.target.value;
+    setBucketNameForm(data);
+  };
   return (
     <div className="bucket-container">
       <div className="left-bucket">
         <div className="search-bucket">
-          <input type="search" placeholder="Search"></input>
+          <input
+            type="search"
+            placeholder="Search"
+            value={bucketNameForm}
+            onChange={handleBucketNameFormChange}
+          ></input>
           <button
             type="button"
             onClick={createBucket}

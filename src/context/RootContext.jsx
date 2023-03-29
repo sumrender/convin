@@ -93,10 +93,10 @@ export default function RootContextProvider({ children }) {
       console.log(error);
     }
   }
-  async function postBucket(item) {
+  async function postBucket(bucket) {
     try {
       const docRef = await addDoc(collection(db, "buckets"), {
-        ...item,
+        ...bucket,
         uid: user.uid,
       });
       console.log("Document written with ID: ", docRef.id);
@@ -151,6 +151,7 @@ export default function RootContextProvider({ children }) {
     activeBucket,
     setActiveBucket,
     postItem,
+    postBucket,
   };
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 }
