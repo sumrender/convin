@@ -9,25 +9,33 @@ import {
   MDBInput,
   MDBIcon,
 } from "mdb-react-ui-kit";
+import { useRootContext } from "../context/RootContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateCard() {
-  const [user, setUser] = useState({
-    bucketName: "",
+  const { setAllItems, activeBucket, postItem } = useRootContext();
+  const navigate = useNavigate();
+  const [item, setItem] = useState({
+    bucket: activeBucket,
     url: "",
     name: "",
   });
-
-  let name, value;
-  const getUserData = (e) => {
+  const handleItem = (e) => {
+    let name, value;
     name = e.target.name;
     value = e.target.value;
-    setUser({ ...user, [name]: value });
-    console.log(user);
+    setItem({ ...item, [name]: value });
   };
 
-  const postData = (e) => {
+  const postData = async (e) => {
     e.preventDefault();
-    console.log("posted");
+    setAllItems((prev) => [...prev, item]);
+    try {
+      await postItem(item);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -49,9 +57,9 @@ export default function CreateCard() {
                   <MDBInput
                     label="URL"
                     id="form1"
-                    value={user.url}
+                    value={item.url}
                     name="url"
-                    onChange={getUserData}
+                    onChange={handleItem}
                     type="url"
                     className="w-100"
                     required
@@ -64,8 +72,8 @@ export default function CreateCard() {
                     label="Name"
                     id="form4"
                     name="name"
-                    value={user.name}
-                    onChange={getUserData}
+                    value={item.name}
+                    onChange={handleItem}
                     type="text"
                     required
                   />

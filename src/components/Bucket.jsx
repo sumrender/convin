@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRootContext } from "../context/RootContext";
+import Card from "./Card";
 
 export default function Buck() {
-  const [activeBucket, setActiveBucket] = useState();
   const [items, setItems] = useState([]);
-  const {allItems, buckets} = useRootContext();
+  const { allItems, buckets, activeBucket, setActiveBucket } = useRootContext();
+
+  let navigate = useNavigate();
+  const routeChange = () => {
+    let path = `./create_card`;
+    navigate(path);
+  };
 
   useEffect(() => {
     const newItem = allItems.filter((item) => item.bucket === activeBucket);
     setItems(newItem);
-  }, [activeBucket]);
+  }, [activeBucket, allItems]);
 
   const bucketData = (e) => {
     e.preventDefault();
@@ -53,12 +60,17 @@ export default function Buck() {
         })}
       </div>
       <div className="right-bucket">
+        {activeBucket && (
+          <button
+            type="button"
+            onClick={routeChange}
+            className="btn btn-primary me-3"
+          >
+            Create
+          </button>
+        )}
         {items.map((item) => {
-          return (
-            <div key={item.name}>
-              <p>{item.name}</p>
-            </div>
-          );
+          return <Card item={item} key={item.id} />;
         })}
       </div>
     </div>

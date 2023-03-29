@@ -2,43 +2,18 @@ export const searchBucket = ["Watch Later", "Trending", "Hot"];
 
 export const itemsData = [
   {
-    name: "kadfkd",
-    bucket: "Hot",
-    url: "",
-  },
-  {
-    name: "kadfkd",
-    bucket: "Hot",
-    url: "",
-  },
-  {
-    name: "kadfkd",
-    bucket: "Hot",
-    url: "",
-  },
-  {
-    name: "kadfkd",
-    bucket: "Hot",
-    url: "",
-  },
-  {
-    name: "hqhrfa",
+    name: "hello hello",
     bucket: "Watch Later",
     url: "",
   },
   {
-    name: "hqhrfa",
-    bucket: "Watch Later",
+    name: "trending",
+    bucket: "Trending",
     url: "",
   },
   {
-    name: "hqhrfa",
-    bucket: "Watch Later",
-    url: "",
-  },
-  {
-    name: "hqhrfa",
-    bucket: "Watch Later",
+    name: "hot",
+    bucket: "Hot",
     url: "",
   },
 ];

@@ -1,6 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import {
   getAuth,
   signInWithPopup,
@@ -32,20 +39,20 @@ export default function RootContextProvider({ children }) {
   const [user, setUser] = useState();
   const [buckets, setBuckets] = useState([]);
   const [allItems, setAllItems] = useState([]);
+  const [activeBucket, setActiveBucket] = useState();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
 
   console.log("user", user);
+  console.log("allItems", allItems);
 
   useEffect(() => {
-    console.log("root context useEffect");
     setLoading(true);
-    onAuthStateChanged(auth, (user) => {
-      console.log("authstatechange lister");
-      if (user) {
-        setUser(user);
+    onAuthStateChanged(auth, (userData) => {
+      if (userData) {
+        setUser(userData);
         setBuckets(searchBucket);
-        setAllItems(itemsData);
+        getAllItems(userData);
       }
       setLoading(false);
     });
@@ -75,6 +82,62 @@ export default function RootContextProvider({ children }) {
     }
   }
 
+  async function postItem(item) {
+    try {
+      const docRef = await addDoc(collection(db, "cards"), {
+        ...item,
+        uid: user.uid,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function postBucket(item) {
+    try {
+      const docRef = await addDoc(collection(db, "buckets"), {
+        ...item,
+        uid: user.uid,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getAllItems(userData) {
+    if (!userData) {
+      console.log("user not defined in get all items");
+      return;
+    }
+    const q = query(collection(db, "cards"), where("uid", "==", userData?.uid));
+
+    const querySnapshot = await getDocs(q);
+    let tempItems = [];
+    querySnapshot.forEach((doc) => {
+      tempItems.push({ id: doc.id, ...doc.data() });
+    });
+    setAllItems(tempItems);
+  }
+
+  async function getAllBuckets(userData) {
+    if (!userData) {
+      console.log("user not defined in get all items");
+      return;
+    }
+    const q = query(
+      collection(db, "buckets"),
+      where("uid", "==", userData?.uid)
+    );
+
+    const querySnapshot = await getDocs(q);
+    let tempItems = [];
+    querySnapshot.forEach((doc) => {
+      tempItems.push({ id: doc.id, ...doc.data() });
+    });
+    setAllItems(tempItems);
+  }
+
   const value = {
     user,
     error,
@@ -85,6 +148,9 @@ export default function RootContextProvider({ children }) {
     setAllItems,
     buckets,
     setBuckets,
+    activeBucket,
+    setActiveBucket,
+    postItem,
   };
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 }
