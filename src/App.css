@@ -1,0 +1,35 @@
+.unauthorized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-navbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 5px;
+}
+
+hr {
+  margin: 0px;
+}
+
+.bucket-container {
+  display: flex;
+}
+
+.left-bucket {
+  background-color: rgb(235, 209, 213);
+  margin:10px;
+  padding: 20px;
+}
+
+.search-bucket {
+  display: flex;
+}
+
+.bucket-item {
+  border: 1px solid gray;
+  margin: 10px;
+  padding: 10px;
+}

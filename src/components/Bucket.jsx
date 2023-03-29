@@ -1,18 +1,16 @@
-import React from "react";
-import {
-  MDBCard,
-  MDBCardBody,
-  MDBCardHeader,
-  MDBCol,
-  MDBContainer,
-  MDBIcon,
-  MDBRow,
-  MDBTable,
-  MDBTableBody,
-  MDBTooltip,
-} from "mdb-react-ui-kit";
+import React, { useEffect, useState } from "react";
+import { useRootContext } from "../context/RootContext";
 
 export default function Buck() {
+  const [activeBucket, setActiveBucket] = useState();
+  const [items, setItems] = useState([]);
+  const {allItems, buckets} = useRootContext();
+
+  useEffect(() => {
+    const newItem = allItems.filter((item) => item.bucket === activeBucket);
+    setItems(newItem);
+  }, [activeBucket]);
+
   const bucketData = (e) => {
     e.preventDefault();
     let val = e.target;
@@ -24,93 +22,45 @@ export default function Buck() {
     //remove this bucket
     console.log("new bucket created");
   };
-  const handleChange = (e) => {
+  const deleteBucket = (e) => {
     e.preventDefault();
     //remove this bucket
     console.log("Delete bucket");
   };
   return (
-    <div>
-      <section className="gradient-custom-2 vh-100">
-        <MDBContainer className="py-5 h-100">
-          <MDBRow className="d-flex justify-content-center align-items-center">
-            <MDBCol md="12" xl="10">
-              <MDBCard>
-                <MDBCardHeader className="p-3">
-                  <input type="search" placeholder="Search"></input>
-                  <button type="button" onChange={createBucket}>
-                    Create
-                  </button>
-                </MDBCardHeader>
-                <MDBCardBody>
-                  <MDBTable className="mb-0" onClick={bucketData}>
-                    <MDBTableBody>
-                      <tr className="fw-normal">
-                        <th>
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-5.webp"
-                            alt="avatar"
-                            className="shadow-1-strong rounded-circle"
-                            style={{ width: "45px", height: "auto" }}
-                          />
-                          <span id="bucket-name" className="ms-2">
-                            Alice Mayer
-                          </span>
-                        </th>
-
-                        <td className="align-middle">
-                          <MDBTooltip
-                            tag="a"
-                            wrapperProps={{ href: "#!" }}
-                            title="Remove"
-                          >
-                            <MDBIcon
-                              fas
-                              icon="trash-alt"
-                              color="danger"
-                              size="lg"
-                              className="me-3"
-                              onClick={handleChange}
-                            />
-                          </MDBTooltip>
-                        </td>
-                      </tr>
-                      <tr className="fw-normal">
-                        <th>
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-4.webp"
-                            alt="avatar"
-                            className="shadow-1-strong rounded-circle"
-                            style={{ width: "45px", height: "auto" }}
-                          />
-                          <span className="ms-2">Kate Moss</span>
-                        </th>
-
-                        <td className="align-middle">
-                          <MDBTooltip
-                            tag="a"
-                            wrapperProps={{ href: "#!" }}
-                            title="Remove"
-                          >
-                            <MDBIcon
-                              fas
-                              icon="trash-alt"
-                              color="danger"
-                              size="lg"
-                              className="me-3"
-                              onClick={handleChange}
-                            />
-                          </MDBTooltip>
-                        </td>
-                      </tr>
-                    </MDBTableBody>
-                  </MDBTable>
-                </MDBCardBody>
-              </MDBCard>
-            </MDBCol>
-          </MDBRow>
-        </MDBContainer>
-      </section>
+    <div className="bucket-container">
+      <div className="left-bucket">
+        <div className="search-bucket">
+          <input type="search" placeholder="Search"></input>
+          <button
+            type="button"
+            onClick={createBucket}
+            className="btn btn-primary me-3"
+          >
+            Create
+          </button>
+        </div>
+        {buckets.map((bucketName) => {
+          return (
+            <div
+              onClick={() => setActiveBucket(bucketName)}
+              className="bucket-item"
+              key={bucketName}
+            >
+              {bucketName}
+            </div>
+          );
+        })}
+      </div>
+      <div className="right-bucket">
+        {items.map((item) => {
+          return (
+            <div key={item.name}>
+              <p>{item.name}</p>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

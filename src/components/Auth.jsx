@@ -1,7 +1,7 @@
-import { useUserContext } from "../context/UserContext";
+import { useRootContext } from "../context/RootContext";
 
 export default function Auth() {
-  const { handleGoogleAuth } = useUserContext();
+  const { handleGoogleAuth } = useRootContext();
   return (
     <>
       <div className="signin">

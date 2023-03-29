@@ -8,6 +8,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { itemsData, searchBucket } from "../data";
 
 const firebaseConfig = {
   apiKey: "AIzaSyApIO6e_gIEzIKgUMhKcbbNXEbSercIlME",
@@ -25,22 +26,26 @@ const auth = getAuth();
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-const UserContext = createContext();
+const RootContext = createContext();
 
-export default function UserContextProvider({ children }) {
+export default function RootContextProvider({ children }) {
   const [user, setUser] = useState();
+  const [buckets, setBuckets] = useState([]);
+  const [allItems, setAllItems] = useState([]);
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
 
   console.log("user", user);
 
   useEffect(() => {
-    console.log("user context useEffect");
+    console.log("root context useEffect");
     setLoading(true);
     onAuthStateChanged(auth, (user) => {
       console.log("authstatechange lister");
       if (user) {
         setUser(user);
+        setBuckets(searchBucket);
+        setAllItems(itemsData);
       }
       setLoading(false);
     });
@@ -70,10 +75,20 @@ export default function UserContextProvider({ children }) {
     }
   }
 
-  const value = { user, error, loading, handleGoogleAuth, handleSignOut };
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  const value = {
+    user,
+    error,
+    loading,
+    handleGoogleAuth,
+    handleSignOut,
+    allItems,
+    setAllItems,
+    buckets,
+    setBuckets,
+  };
+  return <RootContext.Provider value={value}>{children}</RootContext.Provider>;
 }
 
-export function useUserContext() {
-  return useContext(UserContext);
+export function useRootContext() {
+  return useContext(RootContext);
 }

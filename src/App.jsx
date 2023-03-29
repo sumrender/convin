@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Card from "./components/Card";
 import Home from "./components/Home";
 import CreateCard from "./components/CreateCard";
+import "./App.css"
 
 function App() {
   return (
